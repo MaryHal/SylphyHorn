@@ -5,7 +5,7 @@ namespace SylphyHorn.Interop
 	{
 		public static bool IsUwp
 #if APPX
-			=> true;
+			=> false;
 #else
 			=> false;
 #endif

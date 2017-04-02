@@ -26,7 +26,7 @@ namespace SylphyHorn
 			var settings = Settings.ShortcutKey;
 
 			this._application.HookService
-				.Register(()=>settings.MoveLeft.ToShortcutKey(), hWnd => hWnd.MoveToLeft())
+				.Register(() => settings.MoveLeft.ToShortcutKey(), hWnd => hWnd.MoveToLeft())
 				.AddTo(this._application);
 
 			this._application.HookService
@@ -94,8 +94,34 @@ namespace SylphyHorn
 			this._application.HookService
 				.Register(() => settings.TogglePinApp.ToShortcutKey(), hWnd => hWnd.TogglePinApp())
 				.AddTo(this._application);
-		}
 
+			for (var i = 0; i < 10; i++)
+			{
+				var keyIndex = i;
+
+				var switchToIndexKey = settings.SwitchToIndexPrefix.Value;
+				switchToIndexKey[0] = '0' + i;
+				var switchToIndexShortcut = switchToIndexKey.ToShortcutKey();
+
+				this._application.HookService
+					.Register(
+						() => switchToIndexShortcut,
+						_ => VirtualDesktopService.GetByIndex(keyIndex - 1)?.Switch(),
+						() => Settings.General.OverrideWindowsDefaultKeyCombination || Settings.General.ChangeBackgroundEachDesktop)
+					.AddTo(this._application);
+
+				var moveToIndexKey = settings.MoveToIndexPrefix.Value;
+				moveToIndexKey[0] = '0' + i;
+				var moveToIndexShortcut = moveToIndexKey.ToShortcutKey();
+
+				this._application.HookService
+					.Register(
+						() => moveToIndexShortcut,
+						hWnd => hWnd.MoveToIndex(keyIndex - 1),
+						() => Settings.General.OverrideWindowsDefaultKeyCombination || Settings.General.ChangeBackgroundEachDesktop)
+					.AddTo(this._application);
+			}
+		}
 
 		public void ShowTaskTrayIcon()
 		{

@@ -30,6 +30,14 @@ namespace SylphyHorn.Services
 				: current.GetRight();
 		}
 
+		public static VirtualDesktop GetByIndex(int i)
+		{
+			var current = VirtualDesktop.Current;
+			var desktops = VirtualDesktop.GetDesktops();
+
+			return (i >= 0) && (i < desktops.Length) ? desktops[i] : null;
+		}
+
 		#endregion
 
 		#region Move
@@ -77,6 +85,23 @@ namespace SylphyHorn.Services
 				{
 					VirtualDesktopHelper.MoveToDesktop(hWnd, right);
 					return right;
+				}
+			}
+
+			SystemSounds.Asterisk.Play();
+			return null;
+		}
+
+		public static VirtualDesktop MoveToIndex(this IntPtr hWnd, int i)
+		{
+			var current = VirtualDesktop.FromHwnd(hWnd);
+			if (current != null)
+			{
+				var targetDesktop = GetByIndex(i);
+				if (targetDesktop != null)
+				{
+					VirtualDesktopHelper.MoveToDesktop(hWnd, targetDesktop);
+					return targetDesktop;
 				}
 			}
 
